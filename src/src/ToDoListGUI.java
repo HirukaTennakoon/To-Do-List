@@ -12,46 +12,36 @@ public class ToDoListGUI {
         // Create JFrame (Main Window)
         JFrame frame = new JFrame("To-Do List");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 300);
+        frame.setSize(400, 350);
         frame.setLayout(new BorderLayout());
 
         // Task List (JList)
         taskListModel = new DefaultListModel<>();
         taskList = new JList<>(taskListModel);
+        taskList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane scrollPane = new JScrollPane(taskList);
         frame.add(scrollPane, BorderLayout.CENTER);
 
         // Input Field and Buttons
         JPanel panel = new JPanel();
-        taskField = new JTextField(20);
+        taskField = new JTextField(18);
         JButton addButton = new JButton("Add");
         JButton updateButton = new JButton("Update");
         JButton deleteButton = new JButton("Delete");
+        JButton clearAllButton = new JButton("Clear All");
 
         panel.add(taskField);
         panel.add(addButton);
         panel.add(updateButton);
         panel.add(deleteButton);
+        panel.add(clearAllButton);
         frame.add(panel, BorderLayout.SOUTH);
 
         // Event Listeners
-        addButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                addTask();
-            }
-        });
-
-        updateButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                updateTask();
-            }
-        });
-
-        deleteButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                deleteTask();
-            }
-        });
+        addButton.addActionListener(e -> addTask());
+        updateButton.addActionListener(e -> updateTask());
+        deleteButton.addActionListener(e -> deleteTask());
+        clearAllButton.addActionListener(e -> clearAllTasks());
 
         frame.setVisible(true);
     }
@@ -84,9 +74,25 @@ public class ToDoListGUI {
     private void deleteTask() {
         int selectedIndex = taskList.getSelectedIndex();
         if (selectedIndex != -1) {
-            taskListModel.remove(selectedIndex);
+            int confirm = JOptionPane.showConfirmDialog(null,
+                    "Are you sure you want to delete this task?", "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                taskListModel.remove(selectedIndex);
+            }
         } else {
             JOptionPane.showMessageDialog(null, "Select a task to delete.");
+        }
+    }
+
+    private void clearAllTasks() {
+        if (!taskListModel.isEmpty()) {
+            int confirm = JOptionPane.showConfirmDialog(null,
+                    "Are you sure you want to delete all tasks?", "Confirm Clear All", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                taskListModel.clear();
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "No tasks to clear.");
         }
     }
 
